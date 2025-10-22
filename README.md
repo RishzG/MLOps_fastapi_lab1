@@ -17,6 +17,12 @@ Small MLOps lab that wraps a scikit-learn decision tree in a FastAPI service wit
 - Inline logging for successful predictions and validation failures.
 - Responsive dashboard rendered by FastAPI with probability tables and a Start Over control for quick resets.
 
+## Dashboard Preview
+
+![Dashboard form](dashboard_empty.png)
+
+![Dashboard prediction](dashboard_prediction.png)
+
 ## Getting Started
 
 1. **Create/activate a virtual environment** (example on Windows PowerShell):
