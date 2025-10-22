@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Iris Classifier Dashboard</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top, #eef2ff, #f9fafb);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        main {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 24px 48px rgba(15, 23, 42, 0.15);
+            padding: 32px;
+            width: min(520px, 92vw);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #312e81;
+        }
+        p.subtitle {
+            margin: 0 0 24px;
+            color: #4c1d95;
+            font-weight: 500;
+        }
+        form {
+            display: grid;
+            gap: 18px;
+        }
+        label {
+            font-weight: 600;
+            color: #312e81;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        button.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+        }
+        button.primary:active {
+            transform: translateY(0);
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        a.button-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            min-width: 150px;
+            border-radius: 999px;
+            border: 1px solid rgba(99, 102, 241, 0.45);
+            padding: 12px 22px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4338ca;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        a.button-secondary:hover {
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.15);
+            transform: translateY(-1px);
+        }
+        a.button-secondary:active {
+            transform: translateY(0);
+        }
+        .feedback {
+            margin-top: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .feedback.success {
+            background: rgba(34, 197, 94, 0.12);
+            color: #166534;
+            border: 1px solid rgba(34, 197, 94, 0.35);
+        }
+        .feedback.error {
+            background: rgba(239, 68, 68, 0.12);
+            color: #7f1d1d;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+        .probabilities {
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            background: rgba(79, 70, 229, 0.06);
+        }
+        .probabilities h2 {
+            margin: 0 0 12px;
+            font-size: 1.05rem;
+            color: #312e81;
+        }
+        .probabilities table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .probabilities th,
+        .probabilities td {
+            text-align: left;
+            padding: 6px 4px;
+        }
+        .probabilities tr + tr {
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        .hint {
+            margin-top: 18px;
+            font-size: 0.85rem;
+            color: #4338ca;
+            text-align: center;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: radial-gradient(circle at top, #1e1b4b, #0f172a);
+            }
+            main {
+                background: rgba(15, 23, 42, 0.9);
+                color: #e0e7ff;
+            }
+            h1 {
+                color: #a5b4fc;
+            }
+            p.subtitle {
+                color: #c7d2fe;
+            }
+            label {
+                color: #c7d2fe;
+            }
+            input[type="number"] {
+                background: rgba(30, 41, 59, 0.8);
+                color: #e0e7ff;
+            }
+            .probabilities {
+                background: rgba(99, 102, 241, 0.15);
+                border-color: rgba(129, 140, 248, 0.4);
+            }
+            .probabilities h2 {
+                color: #c7d2fe;
+            }
+            a.button-secondary {
+                color: #c7d2fe;
+                border-color: rgba(129, 140, 248, 0.6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Iris Classifier</h1>
+        <p class="subtitle">Experiment with sepal and petal dimensions to see which Iris species is predicted.</p>
+        {% if error %}
+            <div class="feedback error">Warning: {{ error }}</div>
+        {% endif %}
+        {% if result is not none %}
+            <div class="feedback success">Success: Predicted class is <strong>{{ label }}</strong> ({{ result }}).</div>
+        {% endif %}
+        {% if probabilities %}
+            <div class="probabilities">
+                <h2>Class Probabilities</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Probability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in probabilities %}
+                        <tr>
+                            <td>{{ item.label }}</td>
+                            <td>{{ '%.3f' | format(item.value) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        <form method="post" action="{{ request.url.path }}">
+            <div>
+                <label for="sepal_length">Sepal Length (cm)</label>
+                <input id="sepal_length" name="sepal_length" type="number" step="0.01" min="0" required value="{{ form_values.get('sepal_length', '') }}" autocomplete="off" />
+            </div>
+            <div>
+                <label for="sepal_width">Sepal Width (cm)</label>
+                <input id="sepal_width" name="sepal_width" type="number" step="0.01" min="0" required value="{{ form_values.get('sepal_width', '') }}" autocomplete="off" />
+            </div>
+            <div>
+                <label for="petal_length">Petal Length (cm)</label>
+                <input id="petal_length" name="petal_length" type="number" step="0.01" min="0" required value="{{ form_values.get('petal_length', '') }}" autocomplete="off" />
+            </div>
+            <div>
+                <label for="petal_width">Petal Width (cm)</label>
+                <input id="petal_width" name="petal_width" type="number" step="0.01" min="0" required value="{{ form_values.get('petal_width', '') }}" autocomplete="off" />
+            </div>
+            <div class="actions">
+                <button class="primary" type="submit">Predict Species</button>
+                <a class="button-secondary" href="{{ request.url.path }}">Start Over</a>
+            </div>
+        </form>
+        <p class="hint">Need an API instead? POST JSON with the same fields to <code>/predict</code> or <code>/predict-proba</code>.</p>
+    </main>
+</body>
+</html>
